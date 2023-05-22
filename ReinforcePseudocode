@@ -1,0 +1,74 @@
+
+class neuralnet:
+	input pool
+	output pool
+	learning rate
+	
+	constructor(list of number of neurons in each pool in order):
+		create the input pool
+		output = get the last pool
+
+	feedforward(state of the environment):
+		set the input layer's activation equal to the state of the environment
+		feedforward from the input layer
+		return max(node in output)
+	
+	backpropogate(reward):
+		error = reward - max(node in output)
+		output.backpropogate(node with max output, error)
+	
+
+	class pool:
+		list of node values
+		list of blame placed on each node
+		dictionary of outgoing weights indexed by pool they're going to
+		dictionary of incoming weights indexed by the pool they're comming from
+		list of bias corresponding to each node
+
+		constructor(topology, line of topology to use):
+			create a list of the designated number of nodes, all set to 0
+			create a list of random biases (one for each node)
+			if this is the last line of the topology (the output pool), set outgoing weights to  null
+			else: for each pool projected to:
+				create that pool and set it as the index for a matrix of random weights in the dictionary of outgoing weights
+				add this pool and the corresponding weights to their dictionary of incoming weights
+		
+		getOutput:
+			if weights are null return self
+			else, for pool in weights:
+				return pool.getOutput
+		
+		feedforward:
+			take the sigmoid of each node
+			loop through weights and multiply the corresponding node's activation by the corresponding weight and add to the corresponding node's activation in the next pool
+		
+
+		backpropagate(node number, error):
+			bias[node] = bias[node] - (learning rate)(-error)
+			for pool in incoming weights:
+				for weight vector corresponding to each node:
+					weight from this node = weight from this node - (learning rate)(activation)(-error)
+					blame attributed to that node = blame + weight*error
+			activation of node = 0
+
+
+		backpropagate:
+			for node in pool:
+				feedback = activation*(1-activation)*blame
+				backpropagate(node number, feedback)
+				activation of node = 0
+				blame = 0
+			for pool in incoming weights:
+				backpropagate on pool
+			
+
+
+main:
+	for epoch in # train runs:
+		run OpenAI gym environment
+		for state in run:
+			feed the state forward through the neural net
+			decision = output with maximum predicted reward
+			reward = outcome of decision in the environment
+			backpropagate on the difference between the expected and predicted reward
+
